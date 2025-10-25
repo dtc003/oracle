@@ -5,6 +5,7 @@ import { CaseBasedMode } from './components/modes/CaseBasedMode';
 import { AIGeneratedMode } from './components/modes/AIGeneratedMode';
 import { BattleArena } from './components/BattleArena';
 import { PricingPage } from './components/pricing/PricingPage';
+import { SuccessPage } from './components/SuccessPage';
 import { BattleProvider, useBattleContext } from './context/BattleContext';
 import {
   ExaminationMode,
@@ -16,7 +17,7 @@ import {
 import { generateFullScenario } from './services/ai';
 import { signInAnonymousUser } from './services/firebase';
 
-type AppScreen = 'MODE_SELECT' | 'SCRIPTED_SETUP' | 'CASE_BASED_SETUP' | 'AI_GENERATED_SETUP' | 'BATTLE' | 'PRICING';
+type AppScreen = 'MODE_SELECT' | 'SCRIPTED_SETUP' | 'CASE_BASED_SETUP' | 'AI_GENERATED_SETUP' | 'BATTLE' | 'PRICING' | 'SUCCESS';
 
 function AppContent() {
   const [screen, setScreen] = useState<AppScreen>('MODE_SELECT');
@@ -32,6 +33,12 @@ function AppContent() {
 
   // Sign in anonymously on load
   useEffect(() => {
+    // Check for success redirect from Stripe
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('session_id')) {
+      setScreen('SUCCESS');
+    }
+
     // Temporarily disabled for testing - Firebase not set up yet
     // signInAnonymousUser().catch(err => {
     //   console.error('Auth error:', err);
@@ -155,6 +162,9 @@ function AppContent() {
 
     case 'PRICING':
       return <PricingPage user={user} onClose={() => setScreen('MODE_SELECT')} />;
+
+    case 'SUCCESS':
+      return <SuccessPage onContinue={() => setScreen('MODE_SELECT')} />;
 
     case 'SCRIPTED_SETUP':
       return <ScriptedMode onStartBattle={handleScriptedStart} onBack={handleBack} />;
