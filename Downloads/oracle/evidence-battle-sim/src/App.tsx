@@ -23,6 +23,7 @@ function AppContent() {
   const [selectedRuleset, setSelectedRuleset] = useState<RulesetType>('FRE');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
+  const [user] = useState(null); // Temporary - will add auth later
 
   console.log('AppContent rendering, screen:', screen);
 
