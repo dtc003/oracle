@@ -53,24 +53,12 @@ export async function createCheckoutSession(
       return { error: data.error };
     }
 
-    if (!data.sessionId) {
-      return { error: 'No session ID returned from server' };
+    if (!data.url) {
+      return { error: 'No checkout URL returned from server' };
     }
 
-    // Redirect to Stripe Checkout using the proper method
-    const stripe = await getStripe();
-    if (!stripe) {
-      return { error: 'Failed to load Stripe' };
-    }
-
-    // Use Stripe's redirect method
-    const result = await stripe.redirectToCheckout({
-      sessionId: data.sessionId
-    });
-
-    if (result.error) {
-      return { error: result.error.message };
-    }
+    // Redirect to Stripe Checkout URL
+    window.location.href = data.url;
 
     return {};
   } catch (error: any) {
