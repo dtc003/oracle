@@ -13,10 +13,8 @@ export function PricingPage({ user, onClose }: PricingPageProps) {
   const [error, setError] = useState('');
 
   const handleUpgrade = async (tier: Exclude<SubscriptionTier, 'FREE'>) => {
-    if (!user) {
-      setError('Please sign in to upgrade');
-      return;
-    }
+    // Temporary test mode - use test user
+    const testUser = user || { id: 'test-user-123', email: 'test@example.com' };
 
     setLoading(tier);
     setError('');
@@ -24,8 +22,8 @@ export function PricingPage({ user, onClose }: PricingPageProps) {
     try {
       const { error: checkoutError } = await createCheckoutSession(
         tier,
-        user.id,
-        user.email
+        testUser.id,
+        testUser.email
       );
 
       if (checkoutError) {
