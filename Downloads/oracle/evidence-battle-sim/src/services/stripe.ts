@@ -59,13 +59,12 @@ export async function createCheckoutSession(
       return { error: 'Failed to load Stripe' };
     }
 
-    const { error: stripeError } = await stripe.redirectToCheckout({
-      sessionId
-    });
+    // Use window.location for redirect (newer Stripe API)
+    window.location.href = `https://checkout.stripe.com/c/pay/${sessionId}`;
 
-    if (stripeError) {
-      return { error: stripeError.message };
-    }
+    // Alternative: you can also use stripe's newer method if available
+    // const result = await stripe.redirectToCheckout({ sessionId });
+    // if (result.error) return { error: result.error.message };
 
     return {};
   } catch (error: any) {

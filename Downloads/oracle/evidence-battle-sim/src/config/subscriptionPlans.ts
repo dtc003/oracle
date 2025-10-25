@@ -94,3 +94,16 @@ export function getBattlesRemaining(battlesUsed: number, tier: SubscriptionPlan[
 
   return Math.max(0, plan.battlesPerMonth - battlesUsed);
 }
+
+export function getPriceDisplay(tier: SubscriptionPlan['tier']): string {
+  const plan = getPlanForTier(tier);
+
+  if (plan.price === 0) {
+    return 'Free';
+  }
+
+  const price = `$${(plan.price / 100).toFixed(2)}`;
+  const interval = plan.interval === 'month' ? '/month' : '/year';
+
+  return `${price}${interval}`;
+}
