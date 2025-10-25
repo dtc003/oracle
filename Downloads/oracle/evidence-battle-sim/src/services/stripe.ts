@@ -47,24 +47,30 @@ export async function createCheckoutSession(
       })
     });
 
-    const { sessionId, error } = await response.json();
+    const data = await response.json();
 
-    if (error) {
-      return { error };
+    if (data.error) {
+      return { error: data.error };
     }
 
-    // Redirect to Stripe Checkout
+    if (!data.sessionId) {
+      return { error: 'No session ID returned from server' };
+    }
+
+    // Redirect to Stripe Checkout using the proper method
     const stripe = await getStripe();
     if (!stripe) {
       return { error: 'Failed to load Stripe' };
     }
 
-    // Use window.location for redirect (newer Stripe API)
-    window.location.href = `https://checkout.stripe.com/c/pay/${sessionId}`;
+    // Use Stripe's redirect method
+    const result = await stripe.redirectToCheckout({
+      sessionId: data.sessionId
+    });
 
-    // Alternative: you can also use stripe's newer method if available
-    // const result = await stripe.redirectToCheckout({ sessionId });
-    // if (result.error) return { error: result.error.message };
+    if (result.error) {
+      return { error: result.error.message };
+    }
 
     return {};
   } catch (error: any) {
