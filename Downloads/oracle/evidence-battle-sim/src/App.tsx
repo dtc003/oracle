@@ -4,6 +4,7 @@ import { ScriptedMode } from './components/modes/ScriptedMode';
 import { CaseBasedMode } from './components/modes/CaseBasedMode';
 import { AIGeneratedMode } from './components/modes/AIGeneratedMode';
 import { BattleArena } from './components/BattleArena';
+import { PricingPage } from './components/pricing/PricingPage';
 import { BattleProvider, useBattleContext } from './context/BattleContext';
 import {
   ExaminationMode,
@@ -15,7 +16,7 @@ import {
 import { generateFullScenario } from './services/ai';
 import { signInAnonymousUser } from './services/firebase';
 
-type AppScreen = 'MODE_SELECT' | 'SCRIPTED_SETUP' | 'CASE_BASED_SETUP' | 'AI_GENERATED_SETUP' | 'BATTLE';
+type AppScreen = 'MODE_SELECT' | 'SCRIPTED_SETUP' | 'CASE_BASED_SETUP' | 'AI_GENERATED_SETUP' | 'BATTLE' | 'PRICING';
 
 function AppContent() {
   const [screen, setScreen] = useState<AppScreen>('MODE_SELECT');
@@ -150,7 +151,10 @@ function AppContent() {
 
   switch (screen) {
     case 'MODE_SELECT':
-      return <ModeSelector user={user} onSelectMode={handleModeSelect} />;
+      return <ModeSelector user={user} onSelectMode={handleModeSelect} onUpgrade={() => setScreen('PRICING')} />;
+
+    case 'PRICING':
+      return <PricingPage user={user} onClose={() => setScreen('MODE_SELECT')} />;
 
     case 'SCRIPTED_SETUP':
       return <ScriptedMode onStartBattle={handleScriptedStart} onBack={handleBack} />;
@@ -165,7 +169,7 @@ function AppContent() {
       return <BattleArena onExit={handleExit} />;
 
     default:
-      return <ModeSelector user={user} onSelectMode={handleModeSelect} />;
+      return <ModeSelector user={user} onSelectMode={handleModeSelect} onUpgrade={() => setScreen('PRICING')} />;
   }
 }
 
