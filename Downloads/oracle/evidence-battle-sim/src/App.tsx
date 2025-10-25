@@ -149,7 +149,7 @@ function AppContent() {
 
   switch (screen) {
     case 'MODE_SELECT':
-      return <ModeSelector onSelectMode={handleModeSelect} />;
+      return <ModeSelector user={user} onSelectMode={handleModeSelect} />;
 
     case 'SCRIPTED_SETUP':
       return <ScriptedMode onStartBattle={handleScriptedStart} onBack={handleBack} />;
@@ -164,7 +164,7 @@ function AppContent() {
       return <BattleArena onExit={handleExit} />;
 
     default:
-      return <ModeSelector onSelectMode={handleModeSelect} />;
+      return <ModeSelector user={user} onSelectMode={handleModeSelect} />;
   }
 }
 
