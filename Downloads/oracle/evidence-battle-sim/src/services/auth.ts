@@ -1,5 +1,4 @@
 import {
-  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
@@ -9,10 +8,8 @@ import {
   updateProfile
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from './firebase';
+import { auth, db } from './firebase';
 import { User, UserSubscription, UserStats } from '../types';
-
-const auth = getAuth();
 
 /**
  * Create a new user with email and password

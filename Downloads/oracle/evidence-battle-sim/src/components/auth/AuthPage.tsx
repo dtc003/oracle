@@ -43,17 +43,17 @@ export function AuthPage({ onComplete }: AuthPageProps) {
     <div className="min-h-screen bg-gradient-to-br from-navy-900 via-navy-800 to-gray-900 flex items-center justify-center py-12 px-4">
       <div className="max-w-md w-full">
         {/* Logo/Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-black text-white mb-2">
+        <div className="text-center mb-10">
+          <h1 className="text-5xl font-black text-white mb-3">
             Evidence Battle Simulator
           </h1>
-          <p className="text-gray-300">
+          <p className="text-gray-200 text-lg">
             Master evidence objections with AI-powered practice
           </p>
         </div>
 
         {/* Auth Form */}
-        <div className="bg-white rounded-lg shadow-2xl p-8">
+        <div className="bg-white rounded-xl shadow-2xl p-10">
           <div className="flex mb-6 border-b border-gray-200">
             <button
               onClick={() => { setMode('signin'); setError(''); setResetEmailSent(false); }}
@@ -217,7 +217,7 @@ export function AuthPage({ onComplete }: AuthPageProps) {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-gray-400 text-sm mt-6">
+        <p className="text-center text-gray-300 text-sm mt-8">
           By signing up, you agree to our Terms of Service and Privacy Policy
         </p>
       </div>

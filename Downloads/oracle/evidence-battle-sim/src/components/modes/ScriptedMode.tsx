@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScriptedQA } from '../../types';
-import { parseScript } from '../../services/ai';
+import { parseScript } from '../../services/openai';
 
 interface ScriptedModeProps {
   onStartBattle: (script: ScriptedQA[]) => void;

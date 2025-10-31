@@ -29,3 +29,12 @@ h1, h2, h3, h4, h5, h6 {
 .font-sans {
   font-family: 'Inter', sans-serif;
 }
+
+/* Card component for consistent styling */
+.card {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}

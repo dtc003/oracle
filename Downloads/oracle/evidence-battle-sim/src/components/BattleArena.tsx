@@ -20,8 +20,7 @@ export function BattleArena({ onExit }: BattleArenaProps) {
     continueExamination,
     makeObjection,
     processObjection,
-    continueAfterRuling,
-    endBattle
+    continueAfterRuling
   } = useBattleContext();
 
   // Auto-start examination when battle begins
@@ -68,30 +67,25 @@ export function BattleArena({ onExit }: BattleArenaProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-6 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg px-6 py-4 mb-6 flex items-center justify-between">
+        <div className="bg-white rounded-xl shadow-lg px-8 py-5 mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black text-gray-900">
+            <h1 className="text-3xl font-black text-navy-900 font-serif">
               Evidence Battle Simulator
             </h1>
-            <p className="text-sm text-gray-600">
-              Mode: {session.mode.replace('_', ' ')} | Ruleset: {session.ruleset === 'FRE' ? 'Federal Rules of Evidence' : 'Mock Trial'}
+            <p className="text-sm text-gray-600 mt-1">
+              <span className="font-semibold">Mode:</span> {session.mode.replace('_', ' ')} <span className="mx-2">•</span>
+              <span className="font-semibold">Ruleset:</span> {session.ruleset === 'FRE' ? 'Federal Rules of Evidence' : 'Mock Trial'}
             </p>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={endBattle}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded transition-colors"
-            >
-              End Battle
-            </button>
+          <div>
             <button
               onClick={onExit}
-              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition-colors"
+              className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md hover:shadow-lg"
             >
-              Exit
+              Exit Battle
             </button>
           </div>
         </div>
@@ -118,7 +112,7 @@ export function BattleArena({ onExit }: BattleArenaProps) {
                   <button
                     onClick={continueExamination}
                     disabled={isProcessing}
-                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-bold py-4 px-6 rounded-lg transition-colors"
+                    className="w-full bg-navy-700 hover:bg-navy-800 disabled:bg-gray-300 disabled:text-gray-500 text-white font-bold py-4 px-6 rounded-lg transition-colors shadow-md hover:shadow-lg"
                   >
                     {isProcessing ? 'Processing...' : 'Continue Examination →'}
                   </button>
@@ -137,7 +131,7 @@ export function BattleArena({ onExit }: BattleArenaProps) {
                 {currentRuling && (
                   <button
                     onClick={handleContinue}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition-colors"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition-colors shadow-md hover:shadow-lg"
                   >
                     Continue Examination →
                   </button>
@@ -149,8 +143,8 @@ export function BattleArena({ onExit }: BattleArenaProps) {
           {/* Right Column: Battle Stats */}
           <div className="space-y-6">
             {/* Battle Stats */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="text-xl font-bold text-navy-900 mb-4 font-serif">
                 Battle Statistics
               </h3>
               <div className="space-y-3">

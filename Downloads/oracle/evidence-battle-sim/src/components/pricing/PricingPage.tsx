@@ -41,22 +41,22 @@ export function PricingPage({ user, onClose }: PricingPageProps) {
   const currentTier = user?.subscription.tier || 'FREE';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-navy-900 via-navy-800 to-gray-900 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-navy-900 via-navy-800 to-gray-900 py-16 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           {onClose && (
             <button
               onClick={onClose}
-              className="mb-4 text-white hover:text-gray-300 flex items-center mx-auto"
+              className="mb-6 text-gray-200 hover:text-white flex items-center mx-auto transition-colors font-medium"
             >
               ← Back to App
             </button>
           )}
-          <h1 className="text-5xl font-black text-white mb-4">
+          <h1 className="text-5xl sm:text-6xl font-black text-white mb-4">
             Choose Your Plan
           </h1>
-          <p className="text-xl text-gray-300">
+          <p className="text-xl text-gray-200 max-w-2xl mx-auto">
             Start free, upgrade when you're ready for advanced features
           </p>
         </div>
@@ -68,9 +68,9 @@ export function PricingPage({ user, onClose }: PricingPageProps) {
         )}
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto pt-4">
           {/* Free Plan */}
-          <div className={`bg-white rounded-lg shadow-xl p-8 flex flex-col ${
+          <div className={`bg-white rounded-xl shadow-xl p-8 flex flex-col ${
             currentTier === 'FREE' ? 'ring-4 ring-gold-500' : ''
           }`}>
             {currentTier === 'FREE' && (
@@ -104,12 +104,12 @@ export function PricingPage({ user, onClose }: PricingPageProps) {
           </div>
 
           {/* Pro Plan */}
-          <div className={`bg-white rounded-lg shadow-xl p-8 flex flex-col relative ${
+          <div className={`bg-white rounded-xl shadow-xl p-8 flex flex-col relative ${
             currentTier === 'PRO' ? 'ring-4 ring-gold-500' : 'md:scale-105'
           }`}>
             {currentTier !== 'PRO' && (
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-gold-500 to-gold-600 text-white text-sm font-bold px-6 py-2 rounded-full shadow-lg">
-                MOST POPULAR
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-gold-500 to-gold-600 text-white text-xs font-bold px-5 py-1.5 rounded-full shadow-lg uppercase tracking-wide">
+                Most Popular
               </div>
             )}
 
@@ -150,7 +150,7 @@ export function PricingPage({ user, onClose }: PricingPageProps) {
           </div>
 
           {/* Premium Plan */}
-          <div className={`bg-white rounded-lg shadow-xl p-8 flex flex-col ${
+          <div className={`bg-white rounded-xl shadow-xl p-8 flex flex-col ${
             currentTier === 'PREMIUM' ? 'ring-4 ring-gold-500' : ''
           }`}>
             {currentTier === 'PREMIUM' && (

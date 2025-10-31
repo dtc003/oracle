@@ -57,7 +57,7 @@ export function ModeSelector({ onSelectMode, onUpgrade, onLogin, user }: ModeSel
           <h1 className="text-6xl sm:text-7xl font-serif font-bold text-white mb-6 tracking-tight">
             Evidence Battle Simulator
           </h1>
-          <p className="text-xl text-navy-200 max-w-2xl mx-auto font-light">
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto font-light">
             Master evidence objections through AI-powered courtroom practice
           </p>
         </div>
@@ -207,10 +207,10 @@ export function ModeSelector({ onSelectMode, onUpgrade, onLogin, user }: ModeSel
         </div>
 
         {/* Footer */}
-        <div className="mt-12 text-center text-navy-300 text-sm">
+        <div className="mt-12 text-center text-gray-400 text-sm">
           <p className="font-serif">Built to help law students and litigators master evidence objections</p>
           <p className="mt-2">
-            Currently using: <span className="font-semibold text-gold-400">
+            Currently using: <span className="font-semibold text-gold-300">
               {rulesets.find(r => r.type === selectedRuleset)?.name}
             </span>
           </p>

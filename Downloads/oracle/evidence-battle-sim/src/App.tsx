@@ -16,7 +16,7 @@ import {
   AIGeneratedModeConfig,
   User
 } from './types';
-import { generateFullScenario } from './services/ai';
+import { generateFullScenario } from './services/openai';
 import { onAuthChange, getCurrentUser, signOut } from './services/auth';
 import { canAccessMode } from './config/subscriptionPlans';
 
