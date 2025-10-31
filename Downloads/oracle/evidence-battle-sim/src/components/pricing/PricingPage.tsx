@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SUBSCRIPTION_PLANS, getPriceDisplay } from '../../config/subscriptionPlans';
 import { createCheckoutSession } from '../../services/stripe';
 import { User, SubscriptionTier } from '../../types';
+import { QuickUpgrade } from '../admin/QuickUpgrade';
 
 interface PricingPageProps {
   user: User | null;
@@ -13,8 +14,10 @@ export function PricingPage({ user, onClose }: PricingPageProps) {
   const [error, setError] = useState('');
 
   const handleUpgrade = async (tier: Exclude<SubscriptionTier, 'FREE'>) => {
-    // Temporary test mode - use test user
-    const testUser = user || { id: 'test-user-123', email: 'test@example.com' };
+    if (!user) {
+      setError('Please sign in to upgrade your account');
+      return;
+    }
 
     setLoading(tier);
     setError('');
@@ -22,8 +25,8 @@ export function PricingPage({ user, onClose }: PricingPageProps) {
     try {
       const { error: checkoutError } = await createCheckoutSession(
         tier,
-        testUser.id,
-        testUser.email
+        user.id,
+        user.email
       );
 
       if (checkoutError) {
@@ -62,6 +65,13 @@ export function PricingPage({ user, onClose }: PricingPageProps) {
         {error && (
           <div className="max-w-2xl mx-auto mb-6 bg-red-50 border border-red-200 rounded-lg p-4 text-red-800">
             {error}
+          </div>
+        )}
+
+        {/* Quick Upgrade (Development Mode) */}
+        {user && (
+          <div className="max-w-4xl mx-auto">
+            <QuickUpgrade user={user} onUpgradeComplete={() => {}} />
           </div>
         )}
 
