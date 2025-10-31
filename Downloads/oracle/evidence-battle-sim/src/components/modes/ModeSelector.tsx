@@ -6,10 +6,11 @@ import { canAccessMode } from '../../config/subscriptionPlans';
 interface ModeSelectorProps {
   onSelectMode: (mode: ExaminationMode, ruleset: RulesetType) => void;
   onUpgrade?: () => void;
+  onLogin?: () => void;
   user: User | null;
 }
 
-export function ModeSelector({ onSelectMode, onUpgrade, user }: ModeSelectorProps) {
+export function ModeSelector({ onSelectMode, onUpgrade, onLogin, user }: ModeSelectorProps) {
   const [selectedRuleset, setSelectedRuleset] = React.useState<RulesetType>('FRE');
   const rulesets = getAllRulesets();
 
