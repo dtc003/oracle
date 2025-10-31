@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { SUBSCRIPTION_PLANS, getPriceDisplay } from '../../config/subscriptionPlans';
 import { createCheckoutSession } from '../../services/stripe';
 import { User, SubscriptionTier } from '../../types';
-import { QuickUpgrade } from '../admin/QuickUpgrade';
 
 interface PricingPageProps {
   user: User | null;
@@ -65,13 +64,6 @@ export function PricingPage({ user, onClose }: PricingPageProps) {
         {error && (
           <div className="max-w-2xl mx-auto mb-6 bg-red-50 border border-red-200 rounded-lg p-4 text-red-800">
             {error}
-          </div>
-        )}
-
-        {/* Quick Upgrade (Development Mode) */}
-        {user && (
-          <div className="max-w-4xl mx-auto">
-            <QuickUpgrade user={user} onUpgradeComplete={() => {}} />
           </div>
         )}
 

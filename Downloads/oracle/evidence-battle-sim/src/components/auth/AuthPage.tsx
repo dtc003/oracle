@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { signIn, signUp, resetPassword } from '../../services/auth';
-import { useNavigate } from 'react-router-dom';
 
 type AuthMode = 'signin' | 'signup' | 'reset';
 
-export function AuthPage() {
+interface AuthPageProps {
+  onComplete?: () => void;
+}
+
+export function AuthPage({ onComplete }: AuthPageProps) {
   const [mode, setMode] = useState<AuthMode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,7 +15,6 @@ export function AuthPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,10 +24,10 @@ export function AuthPage() {
     try {
       if (mode === 'signup') {
         await signUp(email, password, displayName);
-        navigate('/modes');
+        onComplete?.(); // Navigate after successful signup
       } else if (mode === 'signin') {
         await signIn(email, password);
-        navigate('/modes');
+        onComplete?.(); // Navigate after successful signin
       } else if (mode === 'reset') {
         await resetPassword(email);
         setResetEmailSent(true);
