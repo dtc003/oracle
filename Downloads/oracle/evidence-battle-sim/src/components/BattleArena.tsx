@@ -90,66 +90,68 @@ export function BattleArena({ onExit }: BattleArenaProps) {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Left Column: Transcript with inline objection button */}
-          <div className="lg:col-span-2 space-y-6">
+        <div className="flex gap-6 h-[calc(100vh-200px)]">
+          {/* Main Content: Wider Transcript */}
+          <div className="flex-1 min-w-0">
             <CourtroomDisplay
               transcript={session.transcript}
               isLoading={isProcessing}
             />
-
-            {/* Inline Objection Controls */}
-            {!showObjectionForm ? (
-              <div className="space-y-4">
-                <ObjectionButton
-                  onObject={handleObjectClick}
-                  disabled={!canObject}
-                  isObjectionInProgress={false}
-                />
-
-                {/* Continue Button */}
-                {canObject && session.transcript.length > 0 && (
-                  <button
-                    onClick={continueExamination}
-                    disabled={isProcessing}
-                    className="w-full bg-navy-700 hover:bg-navy-800 disabled:bg-gray-300 disabled:text-gray-500 text-white font-bold py-4 px-6 rounded-lg transition-colors shadow-md hover:shadow-lg"
-                  >
-                    {isProcessing ? 'Processing...' : 'Continue Examination →'}
-                  </button>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <ObjectionForm
-                  ruleset={session.ruleset}
-                  onSubmitObjection={handleSubmitObjection}
-                  counterArgument={currentCounter || undefined}
-                  ruling={currentRuling || undefined}
-                  isProcessing={isProcessing}
-                />
-
-                {currentRuling && (
-                  <button
-                    onClick={handleContinue}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition-colors shadow-md hover:shadow-lg"
-                  >
-                    Continue Examination →
-                  </button>
-                )}
-              </div>
-            )}
           </div>
 
-          {/* Right Column: Battle Stats */}
-          <div className="space-y-6">
-            {/* Battle Stats */}
+          {/* Fixed Right Sidebar: Narrow with Controls + Stats */}
+          <div className="w-80 flex flex-col gap-6 overflow-y-auto">
+            {/* Action Controls */}
+            <div className="bg-white rounded-xl shadow-lg p-6 sticky top-0">
+              {!showObjectionForm ? (
+                <div className="space-y-4">
+                  <ObjectionButton
+                    onObject={handleObjectClick}
+                    disabled={!canObject}
+                    isObjectionInProgress={false}
+                  />
+
+                  {/* Continue Button */}
+                  {canObject && session.transcript.length > 0 && (
+                    <button
+                      onClick={continueExamination}
+                      disabled={isProcessing}
+                      className="w-full bg-navy-700 hover:bg-navy-800 disabled:bg-gray-300 disabled:text-gray-500 text-white font-bold py-4 px-6 rounded-lg transition-colors shadow-md hover:shadow-lg"
+                    >
+                      {isProcessing ? 'Processing...' : 'Continue →'}
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <ObjectionForm
+                    ruleset={session.ruleset}
+                    onSubmitObjection={handleSubmitObjection}
+                    counterArgument={currentCounter || undefined}
+                    ruling={currentRuling || undefined}
+                    isProcessing={isProcessing}
+                  />
+
+                  {currentRuling && (
+                    <button
+                      onClick={handleContinue}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition-colors shadow-md hover:shadow-lg"
+                    >
+                      Continue →
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Battle Statistics */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-navy-900 mb-4 font-serif">
-                Battle Statistics
+              <h3 className="text-lg font-bold text-navy-900 mb-4 font-serif">
+                Battle Stats
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Total Objections:</span>
+                  <span className="text-gray-600">Total:</span>
                   <span className="font-bold">{session.objectionBattles.length}</span>
                 </div>
                 <div className="flex justify-between">
