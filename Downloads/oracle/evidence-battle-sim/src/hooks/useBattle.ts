@@ -19,7 +19,7 @@ import {
   generateWitnessResponse,
   generateCounterArgument,
   generateJudgeRuling
-} from '../services/openai';
+} from '../services/ai';
 
 export function useBattle() {
   const [session, setSession] = useState<BattleSession | null>(null);
