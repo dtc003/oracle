@@ -65,10 +65,10 @@ export function ModeSelector({ onSelectMode, onUpgrade, onLogin, user }: ModeSel
         {/* Ruleset Selection */}
         <div className="card">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-navy-900 to-navy-700 text-white flex items-center justify-center font-serif font-bold text-xl shadow-lg">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-500 to-gold-600 text-white flex items-center justify-center font-serif font-bold text-xl shadow-lg">
               1
             </div>
-            <h2 className="text-3xl font-serif font-bold text-navy-900">
+            <h2 className="text-3xl font-serif font-bold text-gray-900">
               Select Your Ruleset
             </h2>
           </div>
@@ -110,10 +110,10 @@ export function ModeSelector({ onSelectMode, onUpgrade, onLogin, user }: ModeSel
         {/* Mode Selection */}
         <div className="card">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-navy-900 to-navy-700 text-white flex items-center justify-center font-serif font-bold text-xl shadow-lg">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-500 to-gold-600 text-white flex items-center justify-center font-serif font-bold text-xl shadow-lg">
               2
             </div>
-            <h2 className="text-3xl font-serif font-bold text-navy-900">
+            <h2 className="text-3xl font-serif font-bold text-gray-900">
               Choose Your Practice Mode
             </h2>
           </div>
