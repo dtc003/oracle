@@ -76,18 +76,55 @@ export async function signIn(email: string, password: string): Promise<User> {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const firebaseUser = userCredential.user;
 
-    // Update last login time
-    await updateDoc(doc(db, 'users', firebaseUser.uid), {
-      lastLoginAt: serverTimestamp()
-    });
-
-    // Fetch and return user data
+    // Check if user document exists
     const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-    if (!userDoc.exists()) {
-      throw new Error('User data not found');
-    }
 
-    return userDoc.data() as User;
+    if (!userDoc.exists()) {
+      // User document doesn't exist - create it now
+      const newUser: User = {
+        id: firebaseUser.uid,
+        email: firebaseUser.email!,
+        displayName: firebaseUser.displayName || undefined,
+        subscription: {
+          userId: firebaseUser.uid,
+          tier: 'FREE',
+          status: 'ACTIVE',
+          cancelAtPeriodEnd: false,
+          battlesUsedThisMonth: 0,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        stats: {
+          userId: firebaseUser.uid,
+          totalBattles: 0,
+          totalObjections: 0,
+          sustainedObjections: 0,
+          overruledObjections: 0,
+          rulesCited: {},
+          lastActive: new Date()
+        },
+        createdAt: new Date(),
+        lastLoginAt: new Date()
+      };
+
+      await setDoc(doc(db, 'users', firebaseUser.uid), {
+        ...newUser,
+        createdAt: serverTimestamp(),
+        lastLoginAt: serverTimestamp(),
+        'subscription.createdAt': serverTimestamp(),
+        'subscription.updatedAt': serverTimestamp(),
+        'stats.lastActive': serverTimestamp()
+      });
+
+      return newUser;
+    } else {
+      // User document exists - update last login time
+      await updateDoc(doc(db, 'users', firebaseUser.uid), {
+        lastLoginAt: serverTimestamp()
+      });
+
+      return userDoc.data() as User;
+    }
   } catch (error: any) {
     console.error('Error signing in:', error);
     throw new Error(error.message || 'Failed to sign in');
@@ -129,8 +166,46 @@ export async function getCurrentUser(): Promise<User | null> {
 
   try {
     const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+
     if (!userDoc.exists()) {
-      return null;
+      // User document doesn't exist - create it now
+      console.log('Creating missing user document for:', firebaseUser.uid);
+      const newUser: User = {
+        id: firebaseUser.uid,
+        email: firebaseUser.email!,
+        displayName: firebaseUser.displayName || undefined,
+        subscription: {
+          userId: firebaseUser.uid,
+          tier: 'FREE',
+          status: 'ACTIVE',
+          cancelAtPeriodEnd: false,
+          battlesUsedThisMonth: 0,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        stats: {
+          userId: firebaseUser.uid,
+          totalBattles: 0,
+          totalObjections: 0,
+          sustainedObjections: 0,
+          overruledObjections: 0,
+          rulesCited: {},
+          lastActive: new Date()
+        },
+        createdAt: new Date(),
+        lastLoginAt: new Date()
+      };
+
+      await setDoc(doc(db, 'users', firebaseUser.uid), {
+        ...newUser,
+        createdAt: serverTimestamp(),
+        lastLoginAt: serverTimestamp(),
+        'subscription.createdAt': serverTimestamp(),
+        'subscription.updatedAt': serverTimestamp(),
+        'stats.lastActive': serverTimestamp()
+      });
+
+      return newUser;
     }
 
     return userDoc.data() as User;

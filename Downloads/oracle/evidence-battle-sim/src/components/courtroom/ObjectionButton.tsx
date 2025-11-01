@@ -35,7 +35,7 @@ export function ObjectionButton({ onObject, disabled, isObjectionInProgress }: O
           </span>
         ) : (
           <>
-            <span className="relative z-10">⚠ OBJECT! ⚠</span>
+            <span className="relative z-10">OBJECT!</span>
             {!disabled && (
               <span className="absolute inset-0 bg-white opacity-20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
             )}

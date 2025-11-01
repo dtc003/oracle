@@ -13,19 +13,15 @@ export function PricingPage({ user, onClose }: PricingPageProps) {
   const [error, setError] = useState('');
 
   const handleUpgrade = async (tier: Exclude<SubscriptionTier, 'FREE'>) => {
-    if (!user) {
-      setError('Please sign in to upgrade your account');
-      return;
-    }
-
     setLoading(tier);
     setError('');
 
     try {
+      // Allow anonymous users to purchase - they'll create account after payment
       const { error: checkoutError } = await createCheckoutSession(
         tier,
-        user.id,
-        user.email
+        user?.id || 'anonymous',
+        user?.email || ''
       );
 
       if (checkoutError) {

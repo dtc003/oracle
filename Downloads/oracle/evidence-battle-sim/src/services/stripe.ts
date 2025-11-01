@@ -47,6 +47,13 @@ export async function createCheckoutSession(
       })
     });
 
+    // Check if response is ok
+    if (!response.ok) {
+      // API not available (likely local dev without Vercel CLI)
+      console.error('API endpoint not available. Deploy to Vercel to enable payments.');
+      return { error: 'Payment system not available in local development. Please deploy to Vercel to test payments.' };
+    }
+
     const data = await response.json();
 
     if (data.error) {
@@ -63,7 +70,7 @@ export async function createCheckoutSession(
     return {};
   } catch (error: any) {
     console.error('Error creating checkout session:', error);
-    return { error: error.message || 'Failed to create checkout session' };
+    return { error: 'API not available. Deploy to Vercel to enable payments.' };
   }
 }
 

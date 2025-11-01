@@ -13,9 +13,9 @@
     "@anthropic-ai/sdk": "^0.67.0",
     "@stripe/stripe-js": "^8.1.0",
     "firebase": "^12.4.0",
+    "openai": "^6.7.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router-dom": "^7.9.4",
     "stripe": "^19.1.0"
   },
   "devDependencies": {

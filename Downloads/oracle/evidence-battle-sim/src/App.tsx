@@ -6,6 +6,7 @@ import { AIGeneratedMode } from './components/modes/AIGeneratedMode';
 import { BattleArena } from './components/BattleArena';
 import { PricingPage } from './components/pricing/PricingPage';
 import { AuthPage } from './components/auth/AuthPage';
+import { SignupAfterPayment } from './components/auth/SignupAfterPayment';
 import { SuccessPage } from './components/SuccessPage';
 import { BattleProvider, useBattleContext } from './context/BattleContext';
 import {
@@ -20,11 +21,17 @@ import { generateFullScenario } from './services/ai';
 import { onAuthChange, getCurrentUser, signOut } from './services/auth';
 import { canAccessMode } from './config/subscriptionPlans';
 
-type AppScreen = 'HOME' | 'AUTH' | 'SCRIPTED_SETUP' | 'CASE_BASED_SETUP' | 'AI_GENERATED_SETUP' | 'BATTLE' | 'PRICING' | 'ACCOUNT' | 'SUCCESS';
+type AppScreen = 'HOME' | 'AUTH' | 'SCRIPTED_SETUP' | 'CASE_BASED_SETUP' | 'AI_GENERATED_SETUP' | 'BATTLE' | 'PRICING' | 'ACCOUNT' | 'SUCCESS' | 'SIGNUP_AFTER_PAYMENT';
 
 function AppContent() {
-  // Start on HOME (not AUTH) - users can use AI mode without logging in
-  const [screen, setScreen] = useState<AppScreen>('HOME');
+  // Detect initial screen from URL
+  const getInitialScreen = (): AppScreen => {
+    const path = window.location.pathname;
+    if (path.includes('/signup-after-payment')) return 'SIGNUP_AFTER_PAYMENT';
+    return 'HOME';
+  };
+
+  const [screen, setScreen] = useState<AppScreen>(getInitialScreen());
   const [selectedMode, setSelectedMode] = useState<ExaminationMode | null>(null);
   const [selectedRuleset, setSelectedRuleset] = useState<RulesetType>('FRE');
   const [isLoading, setIsLoading] = useState(false);
@@ -320,6 +327,9 @@ function AppContent() {
 
     case 'SUCCESS':
       return <SuccessPage onContinue={() => setScreen('HOME')} />;
+
+    case 'SIGNUP_AFTER_PAYMENT':
+      return <SignupAfterPayment onComplete={() => setScreen('HOME')} />;
 
     default:
       return (
