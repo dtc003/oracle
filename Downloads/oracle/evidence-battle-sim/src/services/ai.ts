@@ -1,4 +1,3 @@
-import OpenAI from 'openai';
 import {
   RulesetType,
   ExaminationType,
@@ -13,14 +12,28 @@ import {
 } from '../types';
 import { getRuleset } from './rules';
 
-// Initialize OpenAI client
-const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-console.log('OpenAI API Key loaded:', apiKey ? `${apiKey.substring(0, 20)}...` : 'MISSING');
+// Helper function to call our secure backend API
+async function callOpenAI(systemPrompt: string, prompt: string, maxTokens: number = 200): Promise<string> {
+  const response = await fetch('/api/ai', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      systemPrompt,
+      prompt,
+      maxTokens,
+    }),
+  });
 
-const openai = new OpenAI({
-  apiKey: apiKey,
-  dangerouslyAllowBrowser: true // Note: For production, use a backend proxy
-});
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to generate AI response');
+  }
+
+  const data = await response.json();
+  return data.content;
+}
 
 // System prompts for different rulesets
 function getSystemPrompt(ruleset: RulesetType): string {
@@ -110,16 +123,7 @@ ${examinationType === 'DIRECT' ?
 
 Return ONLY the question itself, nothing else. Do not include "Q:" or any prefix.`;
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    max_tokens: 200,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: prompt }
-    ]
-  });
-
-  return completion.choices[0].message.content?.trim() || '';
+  return await callOpenAI(systemPrompt, prompt, 200);
 }
 
 // Generate witness response
@@ -156,16 +160,7 @@ Provide a natural witness response that:
 
 Return ONLY the answer itself, nothing else. Do not include "A:" or any prefix.`;
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    max_tokens: 300,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: prompt }
-    ]
-  });
-
-  return completion.choices[0].message.content?.trim() || '';
+  return await callOpenAI(systemPrompt, prompt, 300);
 }
 
 // Generate counter-argument (CRITICAL for 85% fidelity goal)
@@ -212,16 +207,7 @@ This is CRITICAL: Your argument must feel like it comes from a skilled trial att
 
 Return your counter-argument:`;
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    max_tokens: 400,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: prompt }
-    ]
-  });
-
-  const argumentText = completion.choices[0].message.content?.trim() || '';
+  const argumentText = await callOpenAI(systemPrompt, prompt, 400);
 
   // Extract cited rules (simple pattern matching)
   const ruleCitations = argumentText.match(/(?:FRE |Rule |§)?(\d{3}(?:\([a-z]\))?)/gi) || [];
@@ -283,16 +269,7 @@ Your justification should:
 
 This is a teaching moment - make your reasoning clear and instructive.`;
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    max_tokens: 500,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: prompt }
-    ]
-  });
-
-  const responseText = completion.choices[0].message.content?.trim() || '';
+  const responseText = await callOpenAI(systemPrompt, prompt, 500);
 
   // Parse the response
   const decisionMatch = responseText.match(/DECISION:\s*(SUSTAINED|OVERRULED)/i);
@@ -355,16 +332,7 @@ Return your response in this EXACT JSON format:
   "scenarioSummary": "1-2 sentence summary"
 }`;
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    max_tokens: 800,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: prompt }
-    ]
-  });
-
-  const responseText = completion.choices[0].message.content?.trim() || '{}';
+  const responseText = await callOpenAI(systemPrompt, prompt, 800);
 
   // Parse JSON response
   const jsonMatch = responseText.match(/\{[\s\S]*\}/);
