@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 import {
   RulesetType,
   ExaminationType,
@@ -13,12 +13,11 @@ import {
 } from '../types';
 import { getRuleset } from './rules';
 
-// Initialize Anthropic client
-const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
-console.log('Anthropic API Key loaded:', apiKey ? `${apiKey.substring(0, 20)}...` : 'MISSING');
-console.log('All env vars:', import.meta.env);
+// Initialize OpenAI client
+const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+console.log('OpenAI API Key loaded:', apiKey ? `${apiKey.substring(0, 20)}...` : 'MISSING');
 
-const anthropic = new Anthropic({
+const openai = new OpenAI({
   apiKey: apiKey,
   dangerouslyAllowBrowser: true // Note: For production, use a backend proxy
 });
@@ -111,15 +110,16 @@ ${examinationType === 'DIRECT' ?
 
 Return ONLY the question itself, nothing else. Do not include "Q:" or any prefix.`;
 
-  const message = await anthropic.messages.create({
-    model: 'claude-3-haiku-20240307',
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
     max_tokens: 200,
-    system: systemPrompt,
-    messages: [{ role: 'user', content: prompt }]
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: prompt }
+    ]
   });
 
-  const content = message.content[0];
-  return content.type === 'text' ? content.text.trim() : '';
+  return completion.choices[0].message.content?.trim() || '';
 }
 
 // Generate witness response
@@ -156,15 +156,16 @@ Provide a natural witness response that:
 
 Return ONLY the answer itself, nothing else. Do not include "A:" or any prefix.`;
 
-  const message = await anthropic.messages.create({
-    model: 'claude-3-haiku-20240307',
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
     max_tokens: 300,
-    system: systemPrompt,
-    messages: [{ role: 'user', content: prompt }]
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: prompt }
+    ]
   });
 
-  const content = message.content[0];
-  return content.type === 'text' ? content.text.trim() : '';
+  return completion.choices[0].message.content?.trim() || '';
 }
 
 // Generate counter-argument (CRITICAL for 85% fidelity goal)
@@ -211,15 +212,16 @@ This is CRITICAL: Your argument must feel like it comes from a skilled trial att
 
 Return your counter-argument:`;
 
-  const message = await anthropic.messages.create({
-    model: 'claude-3-haiku-20240307',
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
     max_tokens: 400,
-    system: systemPrompt,
-    messages: [{ role: 'user', content: prompt }]
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: prompt }
+    ]
   });
 
-  const content = message.content[0];
-  const argumentText = content.type === 'text' ? content.text.trim() : '';
+  const argumentText = completion.choices[0].message.content?.trim() || '';
 
   // Extract cited rules (simple pattern matching)
   const ruleCitations = argumentText.match(/(?:FRE |Rule |§)?(\d{3}(?:\([a-z]\))?)/gi) || [];
@@ -281,15 +283,16 @@ Your justification should:
 
 This is a teaching moment - make your reasoning clear and instructive.`;
 
-  const message = await anthropic.messages.create({
-    model: 'claude-3-haiku-20240307',
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
     max_tokens: 500,
-    system: systemPrompt,
-    messages: [{ role: 'user', content: prompt }]
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: prompt }
+    ]
   });
 
-  const content = message.content[0];
-  const responseText = content.type === 'text' ? content.text.trim() : '';
+  const responseText = completion.choices[0].message.content?.trim() || '';
 
   // Parse the response
   const decisionMatch = responseText.match(/DECISION:\s*(SUSTAINED|OVERRULED)/i);
@@ -352,15 +355,16 @@ Return your response in this EXACT JSON format:
   "scenarioSummary": "1-2 sentence summary"
 }`;
 
-  const message = await anthropic.messages.create({
-    model: 'claude-3-haiku-20240307',
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
     max_tokens: 800,
-    system: systemPrompt,
-    messages: [{ role: 'user', content: prompt }]
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: prompt }
+    ]
   });
 
-  const content = message.content[0];
-  const responseText = content.type === 'text' ? content.text.trim() : '{}';
+  const responseText = completion.choices[0].message.content?.trim() || '{}';
 
   // Parse JSON response
   const jsonMatch = responseText.match(/\{[\s\S]*\}/);
@@ -392,7 +396,7 @@ Return your response in this EXACT JSON format:
   };
 }
 
-// Parse scripted Q&A
+// Parse scripted Q&A (no API needed)
 export function parseScript(scriptText: string): ScriptedQA[] {
   const lines = scriptText.split('\n').filter(line => line.trim());
   const qaList: ScriptedQA[] = [];
