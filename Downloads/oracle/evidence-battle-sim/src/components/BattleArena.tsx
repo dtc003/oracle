@@ -110,6 +110,13 @@ export function BattleArena({ onExit }: BattleArenaProps) {
                     disabled={!canObject}
                     isObjectionInProgress={false}
                   />
+                  <button
+                    onClick={continueExamination}
+                    disabled={isProcessing}
+                    className="w-full bg-navy-600 hover:bg-navy-700 text-white font-bold py-4 px-6 rounded-lg transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isProcessing ? 'Generating...' : 'Continue Examination →'}
+                  </button>
                 </div>
               ) : (
                 <div className="space-y-4">
