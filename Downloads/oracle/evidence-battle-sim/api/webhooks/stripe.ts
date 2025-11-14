@@ -1,11 +1,28 @@
 import Stripe from 'stripe';
-import { getFirestore, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import * as admin from 'firebase-admin';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2025-09-30.clover'
 });
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+
+// Initialize Firebase Admin SDK
+if (!admin.apps.length) {
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      }),
+    });
+  } catch (error: any) {
+    console.error('Firebase admin initialization error:', error.message);
+  }
+}
+
+const db = admin.firestore();
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
@@ -31,18 +48,17 @@ export default async function handler(req: any, res: any) {
         const userId = session.metadata?.userId;
         const tier = session.metadata?.tier;
 
-        if (userId && session.customer) {
+        if (userId && session.customer && tier) {
           // Update user's subscription in Firestore
-          // TODO: Initialize Firebase admin
-          // await updateDoc(doc(db, 'users', userId), {
-          //   'subscription.stripeCustomerId': session.customer,
-          //   'subscription.stripeSubscriptionId': session.subscription,
-          //   'subscription.tier': tier,
-          //   'subscription.status': 'ACTIVE',
-          //   'subscription.updatedAt': serverTimestamp()
-          // });
+          await db.collection('users').doc(userId).update({
+            'subscription.stripeCustomerId': session.customer,
+            'subscription.stripeSubscriptionId': session.subscription || null,
+            'subscription.tier': tier,
+            'subscription.status': 'ACTIVE',
+            'subscription.updatedAt': admin.firestore.FieldValue.serverTimestamp()
+          });
 
-          console.log(`Subscription created for user ${userId}`);
+          console.log(`Subscription updated for user ${userId} to tier ${tier}`);
         }
         break;
       }
@@ -51,8 +67,20 @@ export default async function handler(req: any, res: any) {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
 
-        // TODO: Find user by stripeCustomerId and update subscription status
-        console.log(`Subscription updated for customer ${customerId}`);
+        // Find user by stripeCustomerId and update subscription status
+        const usersSnapshot = await db.collection('users')
+          .where('subscription.stripeCustomerId', '==', customerId)
+          .limit(1)
+          .get();
+
+        if (!usersSnapshot.empty) {
+          const userDoc = usersSnapshot.docs[0];
+          await userDoc.ref.update({
+            'subscription.status': subscription.status === 'active' ? 'ACTIVE' : 'INACTIVE',
+            'subscription.updatedAt': admin.firestore.FieldValue.serverTimestamp()
+          });
+          console.log(`Subscription updated for customer ${customerId}`);
+        }
         break;
       }
 
@@ -60,8 +88,22 @@ export default async function handler(req: any, res: any) {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
 
-        // TODO: Find user and set subscription to CANCELED
-        console.log(`Subscription canceled for customer ${customerId}`);
+        // Find user and set subscription to CANCELED
+        const usersSnapshot = await db.collection('users')
+          .where('subscription.stripeCustomerId', '==', customerId)
+          .limit(1)
+          .get();
+
+        if (!usersSnapshot.empty) {
+          const userDoc = usersSnapshot.docs[0];
+          await userDoc.ref.update({
+            'subscription.tier': 'FREE',
+            'subscription.status': 'CANCELED',
+            'subscription.cancelAtPeriodEnd': false,
+            'subscription.updatedAt': admin.firestore.FieldValue.serverTimestamp()
+          });
+          console.log(`Subscription canceled for customer ${customerId}`);
+        }
         break;
       }
 
@@ -69,8 +111,20 @@ export default async function handler(req: any, res: any) {
         const invoice = event.data.object as Stripe.Invoice;
         const customerId = invoice.customer as string;
 
-        // TODO: Find user and set subscription to PAST_DUE
-        console.log(`Payment failed for customer ${customerId}`);
+        // Find user and set subscription to PAST_DUE
+        const usersSnapshot = await db.collection('users')
+          .where('subscription.stripeCustomerId', '==', customerId)
+          .limit(1)
+          .get();
+
+        if (!usersSnapshot.empty) {
+          const userDoc = usersSnapshot.docs[0];
+          await userDoc.ref.update({
+            'subscription.status': 'PAST_DUE',
+            'subscription.updatedAt': admin.firestore.FieldValue.serverTimestamp()
+          });
+          console.log(`Payment failed for customer ${customerId}`);
+        }
         break;
       }
 
